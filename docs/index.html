@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>SBOM vyhledávač knihoven</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="title">
+      <h1>SBOM vyhledávač knihoven</h1>
+      <p class="sub">Hledání použitých knihoven napříč SPDX a CycloneDX SBOMy</p>
+    </div>
+    <div class="stats" id="stats" aria-live="polite"></div>
+  </header>
+
+  <main>
+    <section class="controls">
+      <input id="q" type="search" placeholder="Hledat knihovnu, verzi, purl nebo licenci… (např. lodash, pkg:npm, MIT)" autocomplete="off" autofocus>
+      <div class="row">
+        <label>Formát
+          <select id="format">
+            <option value="">Vše</option>
+            <option value="SPDX">SPDX</option>
+            <option value="CycloneDX">CycloneDX</option>
+          </select>
+        </label>
+        <label>SBOM
+          <select id="sbom"><option value="">Všechny SBOMy</option></select>
+        </label>
+        <label>Ekosystém
+          <select id="eco"><option value="">Vše</option></select>
+        </label>
+        <label class="check"><input id="group" type="checkbox" checked> Seskupit stejné knihovny (název + verze)</label>
+        <span class="spacer"></span>
+        <button id="reset" type="button" class="ghost">Vymazat filtry</button>
+        <button id="csv" type="button">Export CSV</button>
+      </div>
+    </section>
+
+    <div id="msg" class="msg" hidden></div>
+    <div class="count" id="count"></div>
+
+    <div class="tablewrap">
+      <table id="tbl">
+        <thead>
+          <tr>
+            <th data-key="name">Knihovna</th>
+            <th data-key="version">Verze</th>
+            <th data-key="ecosystem">Ekosystém</th>
+            <th data-key="license">Licence</th>
+            <th data-key="purl">purl</th>
+            <th data-key="sources">Zdrojový SBOM</th>
+            <th data-key="count" class="num">Počet SBOMů</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <details class="sboms">
+      <summary>Načtené SBOMy</summary>
+      <ul id="sbomlist"></ul>
+    </details>
+  </main>
+
+  <footer id="foot"></footer>
+  <script src="app.js"></script>
+</body>
+</html>
