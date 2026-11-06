@@ -1,0 +1,59 @@
+# SBOM knihovny – statická verze bez JavaScriptu.
+# Generátor: scripts/build.sh + scripts/parse.jq + scripts/render.jq (bash + jq).
+# Prohlížeč dostane čisté HTML + CSS. Žádný Node, Python ani JS ve výstupu.
+name: Build static SBOM pages v2 & deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'resources/**'
+      - 'docs/style2.css'
+      - 'scripts/**'
+      - '.github/workflows/build-sbom-static-v2.yml'
+  workflow_dispatch:
+
+# Princip nejmenších oprávnění: build jen čte repo; Pages token jen u deploy.
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    # Výchozí GitHub-hosted. Self-hosted runner (s bash + jq ≥ 1.7):
+    #   runs-on: [self-hosted, linux]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Vygeneruj statické stránky
+        run: bash scripts/build.sh
+        env:
+          OUT: _site
+
+      - uses: actions/configure-pages@v6
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    # Self-hosted: stejná změna runs-on jako u build.
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
